@@ -64,6 +64,7 @@ import (
 	ssmilvus "github.com/coze-dev/coze-studio/backend/infra/impl/document/searchstore/milvus"
 	ssvikingdb "github.com/coze-dev/coze-studio/backend/infra/impl/document/searchstore/vikingdb"
 	arkemb "github.com/coze-dev/coze-studio/backend/infra/impl/embedding/ark"
+	"github.com/coze-dev/coze-studio/backend/infra/impl/embedding/bge"
 	"github.com/coze-dev/coze-studio/backend/infra/impl/embedding/wrap"
 	"github.com/coze-dev/coze-studio/backend/infra/impl/eventbus"
 	builtinM2Q "github.com/coze-dev/coze-studio/backend/infra/impl/messages2query/builtin"
@@ -345,6 +346,28 @@ func getEmbedding(ctx context.Context) (embedding.Embedder, error) {
 		}, dims)
 		if err != nil {
 			return nil, fmt.Errorf("init ark embedding client failed, err=%w", err)
+		}
+	case "bge":
+		var (
+			bgeEmbeddingBaseURL  = os.Getenv("BGE_EMBEDDING_BASE_URL")
+			bgeEmbeddingModel    = os.Getenv("BGE_EMBEDDING_MODEL") 
+			bgeEmbeddingApiKey   = os.Getenv("BGE_EMBEDDING_API_KEY")
+			bgeEmbeddingBatchSize = os.Getenv("BGE_EMBEDDING_BATCH_SIZE")
+		)
+
+		batchSize, err := strconv.Atoi(bgeEmbeddingBatchSize)
+		if err != nil || batchSize <= 0 {
+			batchSize = 32 // 默认批处理大小
+		}
+
+		emb, err = bge.NewBGEEmbedder(ctx, &bge.EmbeddingConfig{
+			APIKey:    bgeEmbeddingApiKey,
+			BaseURL:   bgeEmbeddingBaseURL,
+			Model:     bgeEmbeddingModel,
+			BatchSize: batchSize,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("init bge embedding client failed, err=%w", err)
 		}
 	default:
 		return nil, fmt.Errorf("init knowledge embedding failed, type not configured")

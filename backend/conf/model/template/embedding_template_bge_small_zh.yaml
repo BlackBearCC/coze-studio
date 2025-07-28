@@ -1,0 +1,47 @@
+id: 200
+name: bge-small-zh-v1.5
+icon_uri: default_icon/embedding_icon.png
+icon_url: embedding_icon_url
+description:
+    zh: BGE 中文 Small 模型，专为中文文本向量化设计，支持512维向量输出
+    en: BGE Chinese Small model, designed for Chinese text vectorization with 512-dimensional vector output
+default_parameters:
+    - name: batch_size
+      label:
+        zh: 批处理大小
+        en: Batch Size
+      desc:
+        zh: 设置批处理大小，影响向量化处理的效率。较大的批处理大小可以提高吞吐量，但会消耗更多内存
+        en: Set batch size for vectorization processing. Larger batch sizes can improve throughput but consume more memory
+      type: int
+      min: "1"
+      max: "100"
+      default_val:
+        default_val: "32"
+      options: []
+      style:
+        widget: slider
+        label:
+            zh: 性能设置
+            en: Performance Settings
+meta:
+    name: bge-small-zh-v1.5
+    protocol: embedding
+    capability:
+        embedding_type: dense
+        dimensions: 512
+        input_modal:
+            - text
+        max_input_length: 512
+        support_batch: true
+        support_hybrid: false
+    conn_config:
+        base_url: https://api.bge.com
+        api_key: your_bge_api_key_here
+        timeout: 30s
+        model: bge-small-zh-v1.5
+        batch_size: 32
+        bge:
+            model_version: v1.5
+            normalize: true
+    status: 0
