@@ -407,6 +407,28 @@ services:
     networks:
       - coze-network
 
+  bge-embedding:
+    build:
+      context: ../backend/scripts/bge-service
+      dockerfile: Dockerfile
+    container_name: coze-bge-embedding
+    profiles: ['middleware']
+    ports:
+      - '8000:8000'
+    environment:
+      - MODEL_NAME=BAAI/bge-small-zh-v1.5
+      - MAX_BATCH_SIZE=32
+      - MAX_SEQUENCE_LENGTH=512
+      - DEVICE=cpu
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:8000/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - coze-network
+
   minio-setup:
     image: minio/mc:RELEASE.2025-05-21T01-59-54Z-cpuv1
     container_name: coze-minio-setup
