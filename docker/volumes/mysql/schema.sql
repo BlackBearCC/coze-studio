@@ -1,5 +1,18 @@
 SET NAMES utf8mb4;
 CREATE DATABASE IF NOT EXISTS opencoze COLLATE utf8mb4_unicode_ci;
+
+-- 添加用户权限配置，允许从任意主机连接
+-- 允许coze用户从任何主机连接
+CREATE USER IF NOT EXISTS 'coze'@'%' IDENTIFIED BY 'coze123';
+GRANT ALL PRIVILEGES ON opencoze.* TO 'coze'@'%';
+
+-- 允许root用户从任何主机连接
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+
+-- 刷新权限
+FLUSH PRIVILEGES;
+
 -- Create 'agent_to_database' table
 CREATE TABLE IF NOT EXISTS `agent_to_database` (`id` bigint unsigned NOT NULL COMMENT 'ID', `agent_id` bigint unsigned NOT NULL COMMENT 'Agent ID', `database_id` bigint unsigned NOT NULL COMMENT 'ID of database_info', `is_draft` bool NOT NULL COMMENT 'Is draft', `prompt_disable` bool NOT NULL DEFAULT 0 COMMENT 'Support prompt calls: 1 not supported, 0 supported', PRIMARY KEY (`id`), UNIQUE INDEX `uniq_agent_db_draft` (`agent_id`, `database_id`, `is_draft`)) ENGINE=InnoDB CHARSET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'agent_to_database info';
 -- Create 'agent_tool_draft' table
